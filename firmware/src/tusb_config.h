@@ -106,6 +106,8 @@
 #define CFG_TUD_VENDOR_RX_BUFSIZE (TUD_OPT_HIGH_SPEED ? 512 : 64)
 #define CFG_TUD_VENDOR_TX_BUFSIZE (TUD_OPT_HIGH_SPEED ? 512 : 64)
 
+#define CFG_TUD_VENDOR_EPSIZE     (TUD_OPT_HIGH_SPEED ? 512 : 64)
+
 #ifdef __cplusplus
  }
 #endif

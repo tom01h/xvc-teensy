@@ -72,20 +72,20 @@ static int cmd_xfer(int bitsLeft, const uint8_t *commands)
   if(bitsLeft == 0){
     com_offset = 5;
     bitsLeft = (commands[4] << 24) | (commands[3] << 16) | (commands[2] << 8) | (commands[1] << 0);
-    if(bitsLeft >= 16*8){
-      n = 16*8;
+    if(bitsLeft >= 252*8){
+      n = 252*8;
     } else {
       n = bitsLeft;
     }
   } else {
-    if(bitsLeft >= 32*8){
-      n = 32*8;
+    if(bitsLeft >= 256*8){
+      n = 256*8;
     } else {
       n = bitsLeft;
     }
   }
   
-  uint32_t bytes = (n + 7) / 8; // 16 or 32
+  uint32_t bytes = (n + 7) / 8; // 252 or 256
 
   for (uint32_t j = 0; j < bytes; j++) {
     uint8_t tdo = 0;
@@ -116,7 +116,7 @@ static int cmd_xfer(int bitsLeft, const uint8_t *commands)
   tud_vendor_n_flush(JTAG_ITF);
 
   // debug code
-  //board_led_write(true); // off
+  //board_led_write(false); // on
 
   return bitsLeft - n;
 }
