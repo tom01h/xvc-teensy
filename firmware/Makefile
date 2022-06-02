@@ -11,4 +11,6 @@ INC += \
 EXAMPLE_SOURCE += $(wildcard src/*.c)
 SRC_C += $(addprefix $(CURRENT_PATH)/, $(EXAMPLE_SOURCE))
 
+CFLAGS_OPTIMIZED ?= -O2
+
 include ${TINYUSB}/examples/rules.mk

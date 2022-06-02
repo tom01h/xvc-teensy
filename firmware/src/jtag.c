@@ -85,33 +85,39 @@ static int cmd_xfer(int bitsLeft, const uint8_t *commands)
     }
   }
   
-  uint32_t bytes = (n + 7) / 8; // 252 or 256
+  uint32_t bytes = n / 8;
 
+  uint8_t tdo;
+  uint8_t tms;
+  uint8_t tdi;
   for (uint32_t j = 0; j < bytes; j++) {
-    uint8_t tdo = 0;
-    uint8_t tms = commands[j*2+com_offset];
-    uint8_t tdi = commands[j*2+com_offset+1];
-    if(((j + 1) != bytes) | ((n%8) == 0)){
-      for (uint32_t i = 0; i < 8; i++) {
-        gpio_write(0, tms & 1, tdi & 1);
-        tms >>= 1;
-        tdi >>= 1;
-        tdo |= gpio_read() << i;
-        GPIO4->DR_SET   = (1ul << tck_gpio);
-      }
-    } else {
-      for (uint32_t i = 0; i < (n%8); i++) {
-        gpio_write(0, tms & 1, tdi & 1);
-        tms >>= 1;
-        tdi >>= 1;
-        tdo |= gpio_read() << i;
-        GPIO4->DR_SET   = (1ul << tck_gpio);
-      }
+    tdo = 0;
+    tms = commands[com_offset++];
+    tdi = commands[com_offset++];
+    for (uint32_t i = 0; i < 8; i++) {
+      gpio_write(0, tms & 1, tdi & 1);
+      tms >>= 1;
+      tdi >>= 1;
+      tdo |= gpio_read() << i;
+      GPIO4->DR_SET   = (1ul << tck_gpio);
     }
     tx_buffer[header_offset++] = tdo;
   }
 
+  tdo = 0;
+  tms = commands[com_offset++];
+  tdi = commands[com_offset++];
+  for (uint32_t i = 0; i < (n%8); i++) {
+    gpio_write(0, tms & 1, tdi & 1);
+    tms >>= 1;
+    tdi >>= 1;
+    tdo |= gpio_read() << i;
+    GPIO4->DR_SET   = (1ul << tck_gpio);
+  }
+  tx_buffer[header_offset++] = tdo;
+
   /* Send the transfer response back to host */
+  bytes = (n + 7) / 8;
   tud_vendor_n_write(JTAG_ITF, tx_buffer, bytes);
   tud_vendor_n_flush(JTAG_ITF);
 
