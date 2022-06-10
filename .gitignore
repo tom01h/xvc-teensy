@@ -1,1 +1,8 @@
 _build/
+SETTINGS.CMD
+nahiviva.tcl
+open_project_gui.cmd
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+host/Makefile

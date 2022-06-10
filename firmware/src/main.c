@@ -54,7 +54,7 @@ void uart_task(void)
   }
 }
 
-#define pin_config_val (IOMUXC_SW_PAD_CTL_PAD_DSE(1) | IOMUXC_SW_PAD_CTL_PAD_SPEED_MASK)
+#define pin_config_val (IOMUXC_SW_PAD_CTL_PAD_DSE(2) | IOMUXC_SW_PAD_CTL_PAD_SPEED_MASK)
 
 static inline void gpio_init( uint32_t muxRegister,
                               uint32_t muxMode,
@@ -92,7 +92,6 @@ void from_host_task(void)
     }
   }
 
-  /*
   if ((buffer_info_axm.busy == false))
   {
     tud_task();
@@ -106,7 +105,6 @@ void from_host_task(void)
       }
     }
   }
-  */
 }
 
 void fetch_command(void)
@@ -146,7 +144,20 @@ int main(void)
 
   // Set up our UART with the required speed.
   
-  // pmod config
+  // pmod init
+  gpio_init( IOMUXC_GPIO_AD_B1_00_GPIO1_IO16, 0U, pin_config_val, GPIO1, PWD0_PIN, &pout_config); // PWD0
+  gpio_init( IOMUXC_GPIO_AD_B1_01_GPIO1_IO17, 0U, pin_config_val, GPIO1, PWD1_PIN, &pout_config); // PWD1
+  gpio_init( IOMUXC_GPIO_AD_B1_02_GPIO1_IO18, 0U, pin_config_val, GPIO1, PRD0_PIN, &pin_config);  // PRD0
+  gpio_init( IOMUXC_GPIO_AD_B1_03_GPIO1_IO19, 0U, pin_config_val, GPIO1, PRD1_PIN, &pin_config);  // PRD1
+
+  gpio_init( IOMUXC_GPIO_AD_B1_10_GPIO1_IO26, 0U, pin_config_val, GPIO1, PCK_PIN, &pout_config);  // PCK
+  gpio_init( IOMUXC_GPIO_AD_B1_11_GPIO1_IO27, 0U, pin_config_val, GPIO1, PWAIT_PIN, &pin_config); // PWAIT
+  gpio_init( IOMUXC_GPIO_AD_B1_09_GPIO1_IO25, 0U, pin_config_val, GPIO1, PWRITE_PIN, &pout_config); // PWRITE
+
+  GPIO_PinWrite(GPIO1, PWD0_PIN, 0);
+  GPIO_PinWrite(GPIO1, PWD1_PIN, 0);
+  GPIO_PinWrite(GPIO1, PCK_PIN, 0);
+  GPIO_PinWrite(GPIO1, PWRITE_PIN, 0);
   
   // LED config (board_init)
   // gpio_init( LED_PINMUX, 0U, 0x10B0U, LED_PORT, LED_PIN, &pout_config);
@@ -159,7 +170,7 @@ int main(void)
   {
     from_host_task();
     fetch_command();
-    //pmod_task();
+    pmod_task();
     //uart_task();
 
   }
