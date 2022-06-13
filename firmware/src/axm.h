@@ -9,6 +9,8 @@
 
 #define AXM_ITF     0
 
+#define axm_delay   10
+
 // typedef uint8_t cmd_buffer[512];
 // // [0]     W/R#
 // // [2:1]   LEN (10bit)

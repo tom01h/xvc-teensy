@@ -248,9 +248,9 @@ int main() {
   raddress = mem_address;
   actual_length = read_dev(1024-8, raddress, receive_data);
   if(actual_length < 0) return -1;
-  //for ( int j = 0; j < actual_length; j++ )
-  //  if(buf[j/8].c[j%8] != receive_data[j])
-  //    printf("error: %d, %d\n", 0, j);
+  for ( int j = 0; j < actual_length; j++ )
+    if(buf[j/8].c[j%8] != receive_data[j])
+      printf("error: %d, %d\n", 0, j);
   printf("len %d\n", actual_length);
   /*for(int i = 0; i < 2; i++){
       actual_length = read_dev(512-8, raddress, receive_data);

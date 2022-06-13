@@ -17,10 +17,12 @@ void plen(int c, bool w)
     uint32_t clr = set ^ msk;
     GPIO1->DR_SET   = set;
     GPIO1->DR_CLEAR = clr;
-    asm volatile("nop");
+    for(int k=0; k < axm_delay; k++)
+      asm volatile("nop");
     c >>= 2;
     GPIO1->DR_CLEAR = (1 << PCK_PIN);
-    asm volatile("nop");
+    for(int k=0; k < axm_delay; k++)
+      asm volatile("nop");
   }
 }
 
@@ -33,18 +35,20 @@ void pread(uint8_t *buffer, int size)
     for(int j=0; j < 4; )
     {
       GPIO1->DR_SET   = (1 << PCK_PIN);
-      asm volatile("nop");
+      for(int k=0; k < axm_delay; k++)
+        asm volatile("nop");
       c >>= 2;
       j++;
       ci =  (uint32_t)(GPIO1->DR);
+      GPIO1->DR_CLEAR = (1 << PCK_PIN);
+      for(int k=0; k < axm_delay; k++)
+        asm volatile("nop");
       if(!(ci & (1 << PWAIT_PIN))){
         c |= (ci >> (PRD1_PIN - 7)) & 0xc0;
       } else {
         c <<= 2;
         j--;
       }
-      GPIO1->DR_CLEAR = (1 << PCK_PIN);
-      asm volatile("nop");
     }
     buffer[i] = c;
   }
@@ -61,11 +65,11 @@ void pwrite(uint8_t *buffer, int size, bool w)
       uint32_t clr = set ^ msk;
       GPIO1->DR_SET   = set;
       GPIO1->DR_CLEAR = clr;
-      for(int k=0; k<10; k++)
+      for(int k=0; k < axm_delay; k++)
         asm volatile("nop");
       c >>= 2;
       GPIO1->DR_CLEAR = (1 << PCK_PIN);
-      for(int k=0; k<10; k++)
+      for(int k=0; k < axm_delay; k++)
         asm volatile("nop");
     }
   }
@@ -99,7 +103,7 @@ void pmod_task()
       buffer = &buffer_info_axm.buffer[0];
       max_wlen = 512;
     }
-    for(int i=0; i<10; i++)
+    for(int i=0; i < axm_delay; i++)
       asm volatile("nop");
     if(write){               // WRITE
       if(size > max_wlen){                           // DATA
